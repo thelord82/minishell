@@ -6,19 +6,11 @@
 /*   By: malord <malord@student.42quebec.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/31 10:10:38 by malord            #+#    #+#             */
-/*   Updated: 2022/09/21 18:51:19 by malord           ###   ########.fr       */
+/*   Updated: 2022/09/29 15:12:40 by malord           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
-// Check for the 6 whitespaces
-static int	ft_isspace(char c)
-{
-	if ((c >= 9 && c <= 13) || (c == 32))
-		return (1);
-	return (0);
-}
 
 // Converts in long value a string containing digits
 long	ft_atol(const char *str)

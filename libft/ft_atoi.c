@@ -6,19 +6,11 @@
 /*   By: malord <malord@student.42quebec.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 09:42:31 by malord            #+#    #+#             */
-/*   Updated: 2022/07/05 14:42:04 by malord           ###   ########.fr       */
+/*   Updated: 2022/09/29 15:12:23 by malord           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
-// Check for the 6 whitespaces
-static int	ft_isspace(char c)
-{
-	if ((c >= 9 && c <= 13) || (c == 32))
-		return (1);
-	return (0);
-}
 
 // Converts in int value a string containing digits
 int	ft_atoi(const char *str)
