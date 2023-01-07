@@ -1,100 +1,131 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: malord <malord@student.42quebec.com>       +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/03/30 09:39:10 by malord            #+#    #+#              #
-#    Updated: 2022/09/29 15:03:32 by malord           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+#------------------------------------------------------------------------------#
+#                                  GENERICS                                    #
+#------------------------------------------------------------------------------#
 
-NAME		=	libft.a
+# Special variables
+DEFAULT_GOAL: all
+.DELETE_ON_ERROR: $(NAME)
+.PHONY: all bonus clean fclean re
 
-CC			=	gcc
-CFLAGS		=	-Wall -Werror -Wextra
-RM			=	rm -f
+# Hide calls
+export VERBOSE	=	FALSE
+ifeq ($(VERBOSE),TRUE)
+	HIDE =
+else
+	HIDE = @
+endif
 
-SRCS		=	ft_atoi.c				\
-				ft_atol.c				\
-				ft_bzero.c				\
-				ft_calloc.c				\
-				ft_free.c				\
-				ft_isalnum.c			\
-				ft_isalpha.c			\
-				ft_isascii.c			\
-				ft_isdigit.c			\
-				ft_isint.c				\
-				ft_isprint.c			\
-				ft_isspace.c			\
-				ft_itoa.c				\
-				ft_lstadd_back.c		\
-				ft_lstadd_front.c		\
-				ft_lstclear.c			\
-				ft_lstdelone.c			\
-				ft_lstiter.c			\
-				ft_lstlast.c			\
-				ft_lstmap.c				\
-				ft_lstnew.c				\
-				ft_lstsize.c			\
-				ft_memchr.c				\
-				ft_memcmp.c				\
-				ft_memcpy.c				\
-				ft_memmove.c			\
-				ft_memset.c				\
-				ft_numlen_base.c		\
-				ft_putchar_fd.c			\
-				ft_putendl_fd.c			\
-				ft_putnbr_fd.c			\
-				ft_putstr_fd.c			\
-				ft_split.c				\
-				ft_strchr.c				\
-				ft_strdup.c				\
-				ft_striteri.c			\
-				ft_strjoin.c			\
-				ft_strjoin_free.c		\
-				ft_strlcat.c			\
-				ft_strlcpy.c			\
-				ft_strlen.c				\
-				ft_strlen_bef.c			\
-				ft_strlen_until.c		\
-				ft_strmapi.c			\
-				ft_strcmp.c				\
-				ft_strncmp.c			\
-				ft_strncpy.c			\
-				ft_strnstr.c			\
-				ft_strrchr.c			\
-				ft_strtrim.c			\
-				ft_substr.c				\
-				ft_swap.c				\
-				ft_tolower.c			\
-				ft_toupper.c			\
-				free_double_array.c		\
-				get_next_line.c			\
-				sort_int_tab.c
 
-OBJS		= 	${SRCS:.c=.o}
+#------------------------------------------------------------------------------#
+#                                VARIABLES                                     #
+#------------------------------------------------------------------------------#
 
-# Targets
+# Compiler and flags
+CC		=	gcc
+AFLAGS	=	-rcs
+CFLAGS	=	-Wall -Werror -Wextra
+RM		=	rm -rf
 
-.c.o:
-				@$(CC) $(CFLAGS) -c $< -o $(<:.c=.o)
+# Dir and file names
+NAME	=	libft.a
+SRCDIR	=	src/
+OBJDIR	=	bin/
+SRCS	=	src/chr_append.c		\
+			src/chr_prepend.c		\
+			src/free_double_array.c	\
+			src/ft_atoi.c			\
+			src/ft_bzero.c			\
+			src/ft_calloc.c			\
+			src/ft_free.c			\
+			src/ft_isalnum.c		\
+			src/ft_isalpha.c		\
+			src/ft_isascii.c		\
+			src/ft_isdigit.c		\
+			src/ft_isprint.c		\
+			src/ft_isspace.c		\
+			src/ft_itoa.c			\
+			src/ft_itox.c			\
+			src/ft_linelen.c		\
+			src/ft_lstadd_back.c	\
+			src/ft_lstadd_front.c	\
+			src/ft_lstclear.c		\
+			src/ft_lstdelone.c		\
+			src/ft_lstiter.c		\
+			src/ft_lstlast.c		\
+			src/ft_lstmap.c			\
+			src/ft_lstnew.c			\
+			src/ft_lstsize.c		\
+			src/ft_memchr.c			\
+			src/ft_memcmp.c			\
+			src/ft_memcpy.c			\
+			src/ft_memmove.c		\
+			src/ft_memset.c			\
+			src/ft_numlen_base.c	\
+			src/ft_ptoa.c			\
+			src/ft_putchar_fd.c		\
+			src/ft_putendl_fd.c		\
+			src/ft_putnbr_fd.c		\
+			src/ft_putstr_fd.c		\
+			src/ft_split.c			\
+			src/ft_strchr.c			\
+			src/ft_strdup.c			\
+			src/ft_striteri.c		\
+			src/ft_strjoin.c		\
+			src/ft_strlcat.c		\
+			src/ft_strlcpy.c		\
+			src/ft_strlen.c			\
+			src/ft_strlen_before.c	\
+			src/ft_strlen_until.c	\
+			src/ft_strmapi.c		\
+			src/ft_strncmp.c		\
+			src/ft_strnstr.c		\
+			src/ft_strrchr.c		\
+			src/ft_strtrim.c		\
+			src/ft_strtrim_free.c	\
+			src/ft_substr.c			\
+			src/ft_swap.c			\
+			src/ft_tolower.c		\
+			src/ft_toupper.c		\
+			src/ft_utoa.c			\
+			src/get_next_line.c		\
+			src/int_realloc.c		\
+			src/join_free_both.c	\
+			src/sort_int_tab.c		\
+			src/str_append.c		\
+			src/str_prepend.c		\
+			src/strcdup.c			\
+			src/ft_strndup.c		\
+			src/strpop.c			\
+			src/xfree.c
+OBJS	=	$(patsubst $(SRCDIR)%.c,$(OBJDIR)%.o,$(SRCS))
 
-all: 			$(NAME)
 
+#------------------------------------------------------------------------------#
+#                                 TARGETS                                      #
+#------------------------------------------------------------------------------#
+
+all: $(NAME)
+
+# Links static library from object files
 $(NAME): $(OBJS)
-				@ar -crs $(NAME) $(OBJS)
+	$(HIDE)ar $(AFLAGS) $@ $^
+
+# Compiles object files from sources
+$(OBJS): $(OBJDIR)%.o : $(SRCDIR)%.c $(OBJDIR)
+	$(HIDE)$(CC) $(CFLAGS) -c $< -o $@
+
+# Created bin directory
+$(OBJDIR):
+	$(HIDE)mkdir -p $(OBJDIR)
+
 
 # Removes objects
 clean:
-				@$(RM) $(OBJS)
+	$(HIDE)$(RM) $(OBJS)
 
-# Removes objects and executable
-fclean: 		@clean
-				@$(RM) $(NAME)
+# Removes objects and executables
+fclean: clean
+	$(HIDE)$(RM) $(NAME)
 
-# Removes objects and executable then remakes all
-re: 			@fclean all
-				
-.PHONY:			all clean fclean bonus re				
+# Removes objects and executables and remakes
+re: fclean all

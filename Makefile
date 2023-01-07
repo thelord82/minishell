@@ -1,62 +1,125 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: malord <malord@student.42quebec.com>       +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/06/20 10:07:57 by malord            #+#    #+#              #
-#    Updated: 2022/09/29 10:30:27 by malord           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+#*-----------------------------------------------------------------------------#
+#*                                 GENERICS                                    #
+#*-----------------------------------------------------------------------------#
 
-NAME		=	minishell
-LIBFT		=	libft/libft.a
+# Special variables
+DEFAULT_GOAL: all
+.DELETE_ON_ERROR: $(NAME)
+.PHONY: all bonus clean fclean re test valgrind
 
-CC			=	gcc
-CFLAGS		=	-Wall -Werror -Wextra
-RM			=	rm -f
+# Hide calls
+export VERBOSE	=	TRUE
+ifeq ($(VERBOSE),TRUE)
+	HIDE =
+else
+	HIDE = @
+endif
 
-SRCS		=	builtins.c
+# Compiler and flags
+CC		=	gcc
+CFLAGS	=	-Wall -Werror -Wextra -I./include -I./librl -I./libft/include
+RM		=	rm -rf
 
-OBJS		= 	${SRCS:.c=.o}
 
-# Targets
+#*-----------------------------------------------------------------------------#
+#*                                LIBRARIES                                    #
+#*-----------------------------------------------------------------------------#
 
-.c.o:
-				@$(CC) $(CFLAGS) -c $< -o $(<:.c=.o)
+LFTDIR	=	libft/
+LIBFT	=	libft.a
+LFTDEP	=	libft/include/libft.h
+LIBRL	=	librl/libreadline.a librl/libhistory.a
 
-$(NAME): 		$(OBJS)
-				@echo "Compiling libft..."
-				@$(MAKE) -C libft
-				@echo "libft compiled successfully."
-				@echo "Compiling $(NAME) sources"
-				@$(CC) $(CFLAGS) -lreadline -o $(NAME) $(OBJS) $(LIBFT)
-				@echo "Done !"
+# Generates libft.a
+$(LFTDIR)/$(LIBFT): $(LFTDEP)
+	$(HIDE)$(MAKE) -C $(LFTDIR)
 
-all: 			$(NAME)
+# Readline library targetes
+RLCONF	=	librl/config.log
+
+$(RLCONF): $(OBJDIR)
+	$(HIDE)cd librl && ./configure --silent
+
+$(LIBRL): $(RLCONF)
+	$(HIDE)$(MAKE) -s -C librl/
+
+
+#*-----------------------------------------------------------------------------#
+#*                                TARGETS                                      #
+#*-----------------------------------------------------------------------------#
+
+# Dir and file names
+NAME	=	minishell
+SRCDIR	=	src/
+OBJDIR	=	bin/
+SRCS	=	src/array.c				\
+			src/builtin.c			\
+			src/builtin2.c			\
+			src/close_file.c		\
+			src/data.c				\
+			src/error.c				\
+			src/execute.c			\
+			src/files.c				\
+			src/find_and_replace.c	\
+			src/find_next.c			\
+			src/free_params.c		\
+			src/here_doc.c			\
+			src/io.c				\
+			src/minishell.c			\
+			src/params.c			\
+			src/parse.c				\
+			src/parse2.c			\
+			src/paths.c				\
+			src/quotes.c			\
+			src/signals.c			\
+			src/strnsplit.c			\
+			src/vars.c				\
+			src/wait.c
+OBJS	=	$(patsubst $(SRCDIR)%.c,$(OBJDIR)%.o,$(SRCS))
+DEP		=	include/minishell.h
+
+all: $(NAME)
+
+$(NAME): $(LIBRL) $(LFTDIR)/$(LIBFT) $(OBJS)
+	$(HIDE)$(CC) $(CFLAGS) $(OBJS) $(LFTDIR)$(LIBFT) $(LIBRL) -lcurses -o $@ 
+
+$(OBJS): $(OBJDIR)%.o : $(SRCDIR)%.c $(DEP)
+	$(HIDE)$(CC) $(CFLAGS) -c $< -o $@
+
+# Creates binary directory
+$(OBJDIR):
+	$(HIDE)mkdir -p $(OBJDIR)
 
 # Removes objects
 clean:
-				@echo "Removing $(NAME) objects..."
-				@$(RM) $(OBJS)
-				@echo "Removing libft objects..."
-				@make clean -C libft
-				@echo "$(NAME) objects successfully deleted."
-				@echo "libft objects successfully deleted."
+	$(HIDE)$(RM) $(OBJS)
+	$(HIDE)$(MAKE) -C $(LFTDIR) $(MAKE) clean
 
-# Removes objects and executable
-fclean: 		clean
-				@echo "Removing $(NAME) program..."
-				@$(RM) $(NAME)
-				@echo "Removing libft archive..."
-				@$(RM) $(LIBFT)
-				@echo "Executable(s) and archive(s) successfully deleted."
+# Removes objects and executables
+fclean: clean
+	$(HIDE)$(RM) $(NAME) $(DEBUG)
+	$(HIDE)$(RM) $(NAME).dSYM
+	$(HIDE)$(MAKE) -C $(LFTDIR) $(MAKE) fclean
 
-debug:			all
-				$(CC) -g $(CFLAGS) -o $(NAME) $(SRCS) $(LIBFT)
+# Removes objects and executables and remakes
+re: fclean all
 
-# Removes objects and executable then remakes all
-re: 			fclean all
-				
-.PHONY:			all clean fclean bonus re				
+
+#*-----------------------------------------------------------------------------#
+#*                                TESTING                                      #
+#*-----------------------------------------------------------------------------#
+
+norm:
+	$(HIDE)norminette include/
+	$(HIDE)norminette src/
+	$(HIDE)norminette libft/
+
+valgrind: all
+	$(HIDE)valgrind									\
+			--leak-check=full						\
+			--show-leak-kinds=all					\
+			--show-reachable=yes					\
+			--track-fds=yes							\
+			--error-limit=no						\
+			--suppressions=./config/minishell.supp	\
+			./minishell
